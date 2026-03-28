@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kryptos | Medical Intelligence Dashboard</title>
+<!-- Fonts: Using Source Serif 4 for high-end serif and Inter for minimalist sans-serif -->
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;0,8..60,800;1,8..60,400&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-container": "#b6b9b7",
+              "inverse-on-surface": "#313030",
+              "surface-bright": "#393939",
+              "tertiary-fixed": "#e1e3e1",
+              "on-tertiary-fixed-variant": "#444746",
+              "on-primary": "#611200",
+              "secondary-fixed": "#e1e3e1",
+              "surface-variant": "#353535",
+              "outline": "#ab8981",
+              "on-error-container": "#ffdad6",
+              "on-tertiary": "#2e3130",
+              "on-error": "#690005",
+              "surface": "#131313",
+              "on-primary-fixed": "#3c0800",
+              "on-secondary-fixed": "#191c1b",
+              "tertiary-container": "#8f9190",
+              "secondary-container": "#474a48",
+              "surface-container-high": "#2a2a2a",
+              "inverse-primary": "#b32a00",
+              "tertiary": "#c5c7c5",
+              "primary": "#ffb4a1",
+              "on-surface": "#e5e2e1",
+              "on-tertiary-fixed": "#191c1b",
+              "background": "#131313",
+              "surface-container": "#201f1f",
+              "primary-fixed": "#ffdbd2",
+              "primary-container": "#fd582d",
+              "outline-variant": "#5b403a",
+              "on-secondary-fixed-variant": "#444746",
+              "on-surface-variant": "#e4beb5",
+              "surface-container-highest": "#353535",
+              "surface-container-low": "#1c1b1b",
+              "error-container": "#93000a",
+              "secondary-fixed-dim": "#c5c7c5",
+              "on-primary-fixed-variant": "#891e00",
+              "on-secondary": "#2e3130",
+              "surface-container-lowest": "#0e0e0e",
+              "inverse-surface": "#e5e2e1",
+              "on-tertiary-container": "#272a29",
+              "primary-fixed-dim": "#ffb4a1",
+              "surface-dim": "#131313",
+              "tertiary-fixed-dim": "#c5c7c5",
+              "on-primary-container": "#550f00",
+              "surface-tint": "#ffb4a1",
+              "secondary": "#c5c7c5",
+              "error": "#ffb4ab",
+              "on-background": "#e5e2e1"
+            },
+            fontFamily: {
+              "headline": ["Source Serif 4", "serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0e0e0e; /* surface-container-lowest */
+            color: #e5e2e1; /* on-surface */
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Radial Gradients */
+        .bg-glow-orange {
+            background: radial-gradient(circle, rgba(253, 88, 45, 0.15) 0%, rgba(253, 88, 45, 0) 70%);
+        }
+        .bg-glow-grey {
+            background: radial-gradient(circle, rgba(229, 226, 225, 0.1) 0%, rgba(229, 226, 225, 0) 70%);
+        }
+        h1, h2, h3, h4, .font-serif-ui {
+            font-family: 'Source Serif 4', serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative">
+<!-- Asymmetrical Glows -->
+<div class="fixed top-[-10%] left-[-10%] w-[800px] h-[800px] bg-glow-orange pointer-events-none z-0"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[900px] h-[900px] bg-glow-grey pointer-events-none z-0"></div>
+<div class="flex relative z-10">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-64 bg-white/[0.04] backdrop-blur-[32px] py-6 px-4 sticky top-0 border-r border-white/[0.08] z-50">
+<div class="mb-12 px-2">
+<h1 class="text-xl font-bold text-[#ffb4a1] tracking-tight">Kryptos AI</h1>
+<p class="text-[10px] uppercase tracking-[0.2em] text-[#e4beb5] opacity-60 font-body">Medical Intelligence</p>
+</div>
+<nav class="flex-1 space-y-2 font-body">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-white border-l-2 border-[#F15025] bg-white/5 shadow-[inset_10px_0_15px_-10px_rgba(241,80,37,0.2)]" href="#">
+<span class="material-symbols-outlined text-[#F15025]">biotech</span>
+<span class="text-sm font-medium">Diagnostics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-[#CED0CE] hover:text-white hover:bg-white/10" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Patients</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-[#CED0CE] hover:text-white hover:bg-white/10" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="text-sm font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-[#CED0CE] hover:text-white hover:bg-white/10" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+<!-- New Analysis Button moved here -->
+<div class="pt-4 px-2">
+<button class="w-full bg-[#F15025] text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 shadow-[0_8px_24px_rgba(241,80,37,0.3)]">
+<span class="material-symbols-outlined text-sm font-bold">add</span>
+                        New Analysis
+                    </button>
+</div>
+</nav>
+<div class="mt-auto px-2">
+<!-- Bottom space cleared -->
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-transparent backdrop-blur-32 border-b border-white/5 sticky top-0 z-50 flex justify-between items-center px-8 py-4 w-full">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold text-white tracking-tight font-headline">Kryptos</span>
+<nav class="hidden lg:flex items-center gap-8 font-body">
+<a class="flex items-center gap-2 text-white font-medium border-b-2 border-[#ffb4a1] py-1 text-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+                            Model Training
+                        </a>
+<a class="flex items-center gap-2 text-[#e4beb5] hover:text-white transition-all py-1 text-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">cloud_upload</span>
+                            Data Ingestion
+                        </a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-white/5 transition-all duration-300 text-[#e4beb5]">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-white/10 font-body">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-white">Dr. Aris Thorne</p>
+<p class="text-[10px] text-[#e4beb5]">Senior Analyst</p>
+</div>
+<span class="material-symbols-outlined text-3xl text-[#ffb4a1]">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-8 lg:p-12 max-w-7xl mx-auto w-full space-y-12">
+<!-- Hero / Search Section -->
+<section class="flex flex-col items-center text-center space-y-8 py-12">
+<div class="space-y-4 max-w-3xl">
+<h2 class="text-5xl lg:text-7xl font-bold text-white font-headline tracking-tight leading-tight">
+                            Precision Vector <span class="text-primary italic font-normal">Intelligence</span>
+</h2>
+<p class="text-lg text-on-surface-variant font-body font-light max-w-2xl mx-auto">
+                            Execute semantic analysis across encrypted global healthcare repositories with zero-trust protocols.
+                        </p>
+</div>
+<!-- Search Centerpiece -->
+<div class="w-full max-w-2xl relative group">
+<div class="absolute inset-0 bg-primary/10 blur-2xl rounded-full transition-opacity group-focus-within:opacity-100 opacity-0 pointer-events-none"></div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-6 text-on-surface-variant">search</span>
+<input class="w-full glass-panel h-16 pl-16 pr-6 rounded-full text-white placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-body text-sm tracking-wide" placeholder="Search global vector network..." type="text"/>
+</div>
+</div>
+<!-- Hero Action -->
+<button class="bg-secondary text-background font-bold px-10 py-4 rounded-full text-[10px] uppercase tracking-[0.2em] transition-all hover:scale-105 hover:shadow-[0_0_32px_rgba(197,199,197,0.3)] font-body">
+                        Initialize Secure Training
+                    </button>
+</section>
+<!-- Data Grid: Patient Records -->
+<section class="space-y-6">
+<div class="flex justify-between items-end px-2">
+<div>
+<h3 class="text-2xl font-semibold text-white font-headline tracking-tight">Recent Matched Records</h3>
+<p class="text-xs text-on-surface-variant font-body">Real-time cryptographic verification active</p>
+</div>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline font-body uppercase tracking-widest">
+                            View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-white/20 transition-all">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl -mr-12 -mt-12 group-hover:bg-primary/10"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">fingerprint</span>
+</div>
+<div class="flex items-center gap-2 bg-primary/10 px-2 py-1 rounded-full font-body">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-[9px] font-bold text-primary uppercase tracking-wider">Live Match</span>
+</div>
+</div>
+<div class="space-y-2">
+<h4 class="text-xl font-semibold text-white font-headline">Subject #0942-X</h4>
+<div class="flex items-center gap-2 text-on-surface-variant text-xs font-body">
+<span class="material-symbols-outlined text-xs">genetics</span>
+<span>Genome Vector Analysis</span>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-white/5 flex justify-between items-center font-body">
+<span class="text-[9px] text-on-surface-variant uppercase font-bold tracking-[0.15em]">Confidence: 99.4%</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-white/20 transition-all">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl -mr-12 -mt-12 group-hover:bg-primary/10"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">neurology</span>
+</div>
+<div class="flex items-center gap-2 bg-primary/10 px-2 py-1 rounded-full font-body">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-[9px] font-bold text-primary uppercase tracking-wider">Verified</span>
+</div>
+</div>
+<div class="space-y-2">
+<h4 class="text-xl font-semibold text-white font-headline">Subject #8812-Y</h4>
+<div class="flex items-center gap-2 text-on-surface-variant text-xs font-body">
+<span class="material-symbols-outlined text-xs">radiology</span>
+<span>Neural Synapse Map</span>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-white/5 flex justify-between items-center font-body">
+<span class="text-[9px] text-on-surface-variant uppercase font-bold tracking-[0.15em]">Confidence: 97.1%</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden group hover:border-white/20 transition-all">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-3xl -mr-12 -mt-12 group-hover:bg-primary/10"></div>
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">ecg</span>
+</div>
+<div class="flex items-center gap-2 bg-white/5 px-2 py-1 rounded-full font-body">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-[9px] font-bold text-secondary uppercase tracking-wider">Processing</span>
+</div>
+</div>
+<div class="space-y-2">
+<h4 class="text-xl font-semibold text-white font-headline">Subject #2201-Z</h4>
+<div class="flex items-center gap-2 text-on-surface-variant text-xs font-body">
+<span class="material-symbols-outlined text-xs">monitoring</span>
+<span>Cardio-Vascular Strain</span>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-white/5 flex justify-between items-center font-body">
+<span class="text-[9px] text-on-surface-variant uppercase font-bold tracking-[0.15em]">Confidence: 82.8%</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">open_in_new</span>
+</div>
+</div>
+</div>
+</section>
+<!-- AI Insights / Bento Style -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Large Insight Panel -->
+<div class="lg:col-span-8 glass-panel p-8 rounded-3xl relative overflow-hidden min-h-[400px]">
+<div class="absolute inset-0 z-0 opacity-40">
+<img alt="abstract digital connection network" class="w-full h-full object-cover mix-blend-overlay" data-alt="abstract flowing blue and orange digital data threads representing complex neural connections on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnHZHU6H4Cu4WUII8_u8A69rJ_xJbSa29kPWmg-zEIv8Rp5xvHe0C580Cqq--lWKRk5dLDbAk4m4R3bbIpcCQnPuDHkEB__T_g9Y3Mxcedasae5SlM5KOYf8vPQjZqgGrjQJrvTxnIORwGJQ0HNTCGRV1t4QRbKrZqNtFWmUg2WquGnSNDxGV7LwxSWTdL1xwazICD6uwGZhOQEwcK_hHeZajdUl3iKmigCJE8lZ2Pv1iBHJBi7A6LQirZyxzL0c1M_wBEbXgsIzP6"/>
+</div>
+<div class="relative z-10 h-full flex flex-col">
+<div class="flex gap-4 mb-6 font-body">
+<span class="px-3 py-1 bg-primary text-on-primary-container text-[9px] font-black uppercase tracking-[0.2em] rounded-full">System Priority</span>
+<span class="px-3 py-1 bg-white/10 text-white text-[9px] font-bold uppercase tracking-[0.2em] rounded-full backdrop-blur-md">Anomalies Detected</span>
+</div>
+<h3 class="text-4xl font-bold text-white font-headline max-w-lg mb-4 tracking-tight">Global Pathogen Vector Shift Identified</h3>
+<p class="text-on-surface-variant max-w-xl mb-8 font-body leading-relaxed font-light">
+                                AI core has detected a 4.2% variance in regional diagnostic patterns across Northern Europe clusters. Immediate secure training of local models recommended.
+                            </p>
+<div class="mt-auto flex gap-4 font-body">
+<button class="bg-white text-background px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest">Review Analytics</button>
+<button class="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest border border-white/10 transition-colors">Dismiss</button>
+</div>
+</div>
+</div>
+<!-- Small Sidebar Cards -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="glass-panel p-6 rounded-3xl flex-1 flex flex-col justify-center text-center">
+<p class="text-[9px] text-primary font-bold uppercase tracking-[0.25em] mb-2 font-body">Network Health</p>
+<p class="text-6xl font-bold text-white font-headline mb-2">99.9%</p>
+<p class="text-xs text-on-surface-variant font-body">Uptime across all secure nodes</p>
+</div>
+<div class="glass-panel p-6 rounded-3xl flex-1 relative overflow-hidden">
+<div class="absolute -right-4 -bottom-4 opacity-20">
+<span class="material-symbols-outlined text-[120px] text-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<p class="text-[9px] text-secondary font-bold uppercase tracking-[0.25em] mb-4 font-body">Security Protocol</p>
+<p class="text-xl font-semibold text-white mb-2 leading-tight font-headline">Quantum Resistant Encryption</p>
+<p class="text-xs text-on-surface-variant leading-relaxed font-body font-light">Multi-layer verification protocols active for all data transit.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest/80 backdrop-blur-xl border-t border-white/5 flex justify-around items-center py-4 px-6 z-[60] font-body">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">biotech</span>
+<span class="text-[9px] font-bold uppercase tracking-tighter">Diag</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[9px] font-bold uppercase tracking-tighter">Patients</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">insights</span>
+<span class="text-[9px] font-bold uppercase tracking-tighter">Insights</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[9px] font-bold uppercase tracking-tighter">Profile</span>
+</button>
+</nav>
+</main>
+</div>
+</body></html>
