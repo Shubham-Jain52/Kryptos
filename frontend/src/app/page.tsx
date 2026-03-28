@@ -22,18 +22,45 @@ export default function Home() {
     setAppState('SEARCHING');
     try {
       const data = await searchVectors(query);
-      setResults(data);
+
+      // Inject locally-ingested record from localStorage if it exists
+      const saved = localStorage.getItem("kryptos_last_ingest");
+      if (saved) {
+        try {
+          const ingestedRecord = JSON.parse(saved);
+          setResults([ingestedRecord, ...data]);
+        } catch {
+          setResults(data);
+        }
+      } else {
+        setResults(data);
+      }
+
       setAppState('RESULTS');
     } catch (err) {
       toast.error("Network unreachable — using simulated results.", {
         description: "The backend gateway is not responding.",
       });
       // Graceful fallback: show simulated results so the UI still works
-      setResults([
+      const fallbackResults = [
         { id: "Case 8842-Alpha", matchScore: "98% MATCH", hospital: "Hospital B", scanType: "MRI", department: "Cardiology", lastAccessed: "2h ago" },
         { id: "Case 7731-Bravo", matchScore: "91% MATCH", hospital: "Hospital A", scanType: "CT Scan", department: "Neurology", lastAccessed: "5h ago" },
         { id: "Case 5519-Delta", matchScore: "87% MATCH", hospital: "Hospital C", scanType: "X-Ray", department: "Orthopedics", lastAccessed: "1d ago" },
-      ]);
+      ];
+
+      // Also inject locally-ingested record in fallback path
+      const saved = localStorage.getItem("kryptos_last_ingest");
+      if (saved) {
+        try {
+          const ingestedRecord = JSON.parse(saved);
+          setResults([ingestedRecord, ...fallbackResults]);
+        } catch {
+          setResults(fallbackResults);
+        }
+      } else {
+        setResults(fallbackResults);
+      }
+
       setAppState('RESULTS');
     }
   };

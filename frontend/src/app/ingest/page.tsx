@@ -100,12 +100,37 @@ export default function IngestPage() {
           description: data.message || "AES-256 ciphertext stored.",
         });
 
+        // Save to localStorage so it appears in future search results
+        const newRecord = {
+          id: "LOCAL-" + Date.now(),
+          matchScore: "100% VERIFIED",
+          hospital: hospitalName || "Hospital B",
+          scanType: (condition || "Medical Scan") + " — Encrypted Ingest",
+          department: "Secure Enclave",
+          lastAccessed: "Just now",
+          isNew: true,
+        };
+        localStorage.setItem("kryptos_last_ingest", JSON.stringify(newRecord));
+
         setTimeout(resetForm, 4000);
       } catch {
         toast.error("Ingestion failed — simulating success.", {
           description: "The backend gateway is not responding.",
         });
         setUploadStep("success");
+
+        // Still save to localStorage so it appears in search results
+        const newRecord = {
+          id: "LOCAL-" + Date.now(),
+          matchScore: "100% VERIFIED",
+          hospital: hospitalName || "Hospital B",
+          scanType: (condition || "Medical Scan") + " — Encrypted Ingest",
+          department: "Secure Enclave",
+          lastAccessed: "Just now",
+          isNew: true,
+        };
+        localStorage.setItem("kryptos_last_ingest", JSON.stringify(newRecord));
+
         setTimeout(resetForm, 4000);
       }
     }, 800);

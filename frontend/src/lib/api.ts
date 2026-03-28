@@ -12,6 +12,7 @@ export interface SearchResult {
   scanType: string;     // e.g. "MRI", "CT Scan", "X-Ray"
   department: string;   // e.g. "Cardiology"
   lastAccessed: string; // e.g. "2h ago"
+  isNew?: boolean;      // true for locally-ingested records
 }
 
 export interface TrainingStatus {

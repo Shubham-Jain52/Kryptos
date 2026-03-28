@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { Activity, Brain, Bone, Stethoscope, ArrowRight, SearchX, LucideIcon } from "lucide-react";
+import { Activity, Brain, Bone, Stethoscope, ShieldCheck, ArrowRight, SearchX, LucideIcon } from "lucide-react";
 import type { SearchResult } from "@/lib/api";
 
 interface VectorGridProps {
@@ -82,32 +82,52 @@ export function VectorGrid({ results, onInitialize }: VectorGridProps) {
       {/* Cards Grid — each card decrypts in */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {results.map((data) => {
-          const Icon = iconMap[data.scanType] ?? Stethoscope;
+          const Icon = data.isNew ? ShieldCheck : (iconMap[data.scanType] ?? Stethoscope);
+          const isLive = data.isNew === true;
           return (
             <motion.div
               key={data.id}
               variants={cardVariants}
               whileHover={{
                 y: -4,
-                borderColor: "rgba(255,255,255,0.10)",
+                borderColor: isLive ? "rgba(74,222,128,0.25)" : "rgba(255,255,255,0.10)",
                 transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] },
               }}
-              className="bg-[#201f1f] border border-white/[0.03] p-10 rounded-[2rem] relative overflow-hidden cursor-pointer shadow-xl"
+              className={`bg-[#201f1f] p-10 rounded-[2rem] relative overflow-hidden cursor-pointer shadow-xl border ${
+                isLive ? "border-emerald-500/20 shadow-[0_0_40px_rgba(74,222,128,0.08)]" : "border-white/[0.03]"
+              }`}
             >
+              {/* LIVE INGESTION glow bar */}
+              {isLive && (
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-400/60 to-emerald-500/0 animate-pulse" />
+              )}
+
               <div className="flex justify-between items-start mb-10">
-                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] flex items-center justify-center border border-white/5">
-                  <Icon className="w-8 h-8 text-[#ffb4a1]" />
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border ${
+                  isLive ? "bg-emerald-500/10 border-emerald-500/20" : "bg-white/[0.03] border-white/5"
+                }`}>
+                  <Icon className={`w-8 h-8 ${isLive ? "text-emerald-400" : "text-[#ffb4a1]"}`} />
                 </div>
-                <div className="flex items-center gap-2 bg-[#ffb4a1]/10 px-3 py-1.5 rounded-full border border-[#ffb4a1]/10">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#ffb4a1] animate-pulse" />
-                  <span className="text-[10px] font-black text-[#ffb4a1] uppercase tracking-widest leading-none">{data.matchScore}</span>
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${
+                  isLive
+                    ? "bg-emerald-500/10 border-emerald-500/20"
+                    : "bg-[#ffb4a1]/10 border-[#ffb4a1]/10"
+                }`}>
+                  <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                    isLive ? "bg-emerald-400" : "bg-[#ffb4a1]"
+                  }`} />
+                  <span className={`text-[10px] font-black uppercase tracking-widest leading-none ${
+                    isLive ? "text-emerald-400" : "text-[#ffb4a1]"
+                  }`}>
+                    {isLive ? "LIVE INGESTION" : data.matchScore}
+                  </span>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <h4 className="text-2xl font-bold text-white font-headline tracking-tight">{data.id}</h4>
                 <div className="flex items-center gap-2 text-on-surface-variant font-sans text-xs font-light opacity-80">
-                  <Icon className="w-3.5 h-3.5 opacity-50" />
+                  <Icon className={`w-3.5 h-3.5 opacity-50 ${isLive ? "text-emerald-400" : ""}`} />
                   <span>{data.hospital} · {data.department}</span>
                 </div>
               </div>

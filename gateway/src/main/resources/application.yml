@@ -4,3 +4,7 @@ spring:
 
 server:
   port: ${PORT:8080}
+
+ai:
+  service:
+    url: ${AI_SERVICE_URL:https://tatertots123-kryptos.hf.space}

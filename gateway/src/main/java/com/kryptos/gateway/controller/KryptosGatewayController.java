@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,13 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.kryptos.gateway.dto.IngestRequest;
-
 @RestController
 @RequestMapping("/api/v1")
 public class KryptosGatewayController {
 
     private final RestTemplate restTemplate;
+
+    @Value("${ai.service.url}")
+    private String aiServiceUrl;
 
     private static final String[] HOSPITALS = {"AIIMS Delhi", "Fortis Mumbai", "Apollo Chennai"};
     private static final String[] DEPARTMENTS = {"Cardiology", "Neurology", "Oncology"};
@@ -30,10 +35,20 @@ public class KryptosGatewayController {
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * Builds HttpHeaders with the required User-Agent for Hugging Face.
+     */
+    private HttpHeaders buildHfHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("User-Agent", "Kryptos-Gateway-Bot");
+        return headers;
+    }
+
+    // ── /api/v1/search — The Intelligence Link ──
     @PostMapping("/search")
     @SuppressWarnings("unchecked")
     public ResponseEntity<List<Map<String, Object>>> search(@RequestBody Map<String, Object> payload) {
-        System.out.println("[Kryptos] Search request received: " + payload);
 
         // Extract the user's query — default to "Medical Scan" if absent
         String query = "Medical Scan";
@@ -42,21 +57,22 @@ public class KryptosGatewayController {
             query = (String) rawQuery;
         }
 
+        System.out.println("[Kryptos] 🔍 Search query: \"" + query + "\" → proxying to " + aiServiceUrl + "/ai/search");
+
         try {
-            // Attempt to proxy the request to the Python AI service
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, buildHfHeaders());
             ResponseEntity<List> aiResponse = restTemplate.postForEntity(
-                "http://localhost:8000/search",
-                payload,
+                aiServiceUrl + "/ai/search",
+                request,
                 List.class
             );
-            System.out.println("[Kryptos] AI Service responded successfully.");
+            System.out.println("[Kryptos] ✅ HuggingFace AI responded successfully.");
             return ResponseEntity.ok(aiResponse.getBody());
 
         } catch (RestClientException e) {
-            // FALLBACK: AI service is offline — return smart mock enclave data
-            System.out.println("[Kryptos] ⚠ AI Service offline, returning smart mock data for query: \"" + query + "\"");
+            System.out.println("[Kryptos] ⚠ HuggingFace offline or cold-starting. Returning smart mock data.");
+            System.out.println("[Kryptos] Reason: " + e.getMessage());
 
-            // Generate 3 query-aware, unique mock records
             List<Map<String, Object>> mockResults = List.of(
                 Map.of(
                     "id", "Case-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(),
@@ -88,13 +104,33 @@ public class KryptosGatewayController {
         }
     }
 
+    // ── /api/v1/ingest — The Enclave Handover ──
     @PostMapping("/ingest")
-    public ResponseEntity<Map<String, String>> ingest(@RequestBody IngestRequest request) {
-        System.out.println("[Kryptos] Ingesting data from hospital: " + request.getHospitalName());
+    public ResponseEntity<Map<String, String>> ingest(@RequestBody Map<String, Object> payload) {
+        String hospitalName = payload.getOrDefault("hospitalName", "Unknown").toString();
+        System.out.println("[Kryptos] 📥 Ingesting data from: " + hospitalName + " → proxying to " + aiServiceUrl + "/ai/ingest");
 
-        return ResponseEntity.ok(Map.of(
-            "status", "success",
-            "message", "Data ingested successfully from " + request.getHospitalName()
-        ));
+        try {
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, buildHfHeaders());
+            ResponseEntity<String> aiResponse = restTemplate.postForEntity(
+                aiServiceUrl + "/ai/ingest",
+                request,
+                String.class
+            );
+            System.out.println("[Kryptos] ✅ HuggingFace ingestion succeeded.");
+            return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Data encrypted and stored via AI Enclave from " + hospitalName
+            ));
+
+        } catch (RestClientException e) {
+            System.out.println("[Kryptos] ⚠ HuggingFace offline for ingestion. Returning mock success.");
+            System.out.println("[Kryptos] Reason: " + e.getMessage());
+
+            return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Data ingested successfully from " + hospitalName + " (simulated — AI service cold-starting)"
+            ));
+        }
     }
 }
