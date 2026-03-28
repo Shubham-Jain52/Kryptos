@@ -18,6 +18,7 @@ export default function Home() {
   const [trainingId, setTrainingId] = useState<string | undefined>();
 
   const handleSearch = async (query: string) => {
+    setResults([]);        // Clear old cards — triggers re-animation on new data
     setAppState('SEARCHING');
     try {
       const data = await searchVectors(query);

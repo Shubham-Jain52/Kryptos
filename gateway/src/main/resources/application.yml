@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: gateway
+
+server:
+  port: ${PORT:8080}
