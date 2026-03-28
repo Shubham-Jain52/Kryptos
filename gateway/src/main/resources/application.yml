@@ -7,4 +7,4 @@ server:
 
 ai:
   service:
-    url: ${AI_SERVICE_URL:https://tatertots123-kryptos.hf.space}
+    url: ${AI_SERVICE_URL:https://kryptos-backend-289445394265.us-central1.run.app}

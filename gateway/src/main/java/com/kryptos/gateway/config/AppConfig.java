@@ -10,10 +10,10 @@ public class AppConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        // 60-second timeout to handle Hugging Face cold starts
+        // 30-second timeout for Google Cloud Run cold starts (faster than HF)
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(60_000);
-        factory.setReadTimeout(60_000);
+        factory.setConnectTimeout(30_000);
+        factory.setReadTimeout(30_000);
         return new RestTemplate(factory);
     }
 }
