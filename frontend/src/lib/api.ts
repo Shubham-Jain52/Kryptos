@@ -1,7 +1,7 @@
 // ── Kryptos API Service ──
-// Connects to the Spring Boot gateway on Render
+// Connects to the Spring Boot gateway (Default: Render)
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://kryptos-4yrt.onrender.com/api/v1";
 
 // ── Types ──
 
