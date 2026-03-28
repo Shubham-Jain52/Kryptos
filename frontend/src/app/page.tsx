@@ -26,7 +26,7 @@ export default function Home() {
       setAppState('RESULTS');
     } catch (err) {
       toast.error("Network unreachable — using simulated results.", {
-        description: "The backend gateway at localhost:8080 is not responding.",
+        description: "The backend gateway is not responding.",
       });
       // Graceful fallback: show simulated results so the UI still works
       setResults([

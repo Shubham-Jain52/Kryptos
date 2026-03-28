@@ -80,7 +80,7 @@ export default function IngestPage() {
         setUploadStep("routing");
 
         // STEP 4: Send encrypted payload to gateway
-        const res = await fetch("http://localhost:8080/api/v1/ingest", {
+        const res = await fetch("https://kryptos-4yrt.onrender.com/api/v1/ingest", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
