@@ -1,7 +1,7 @@
 // ── Kryptos API Service ──
 // Connects to the Spring Boot gateway on Render
 
-const BASE_URL = "https://kryptos-4yrt.onrender.com/api/v1";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
 
 // ── Types ──
 
@@ -13,6 +13,7 @@ export interface SearchResult {
   department: string;   // e.g. "Cardiology"
   lastAccessed: string; // e.g. "2h ago"
   isNew?: boolean;      // true for locally-ingested records
+  source?: string;      // "ENCLAVE" | "SIMULATED" | "LIVE_INGEST"
 }
 
 export interface TrainingStatus {

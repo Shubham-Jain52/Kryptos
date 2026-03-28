@@ -20,19 +20,22 @@ const containerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.18,
-      delayChildren: 0.1,
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
     },
   },
-  exit: { opacity: 0, y: -10 },
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] },
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { 
+      duration: 0.7, 
+      ease: [0.4, 0, 0.2, 1] 
+    } 
   },
 };
 
@@ -40,20 +43,20 @@ export function VectorGrid({ results, onInitialize }: VectorGridProps) {
   if (results.length === 0) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-        className="w-full max-w-3xl mx-auto mt-20 px-8 text-center pb-20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col items-center justify-center pt-24 pb-40 overflow-hidden"
       >
-        <div className="glass-panel rounded-[2.5rem] p-16 flex flex-col items-center gap-6">
-          <div className="w-20 h-20 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center">
-            <SearchX className="w-10 h-10 text-on-surface-variant opacity-40" />
-          </div>
-          <h3 className="text-2xl font-bold text-white font-headline tracking-tight">No Clinical Matches Found</h3>
-          <p className="text-sm text-on-surface-variant font-sans font-light opacity-60 max-w-md">
-            No matching vectors were discovered in the global anonymized network. Try refining your search query or broadening the clinical parameters.
-          </p>
+        <div className="relative mb-12">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute -inset-10 bg-gradient-to-r from-emerald-500/10 via-transparent to-emerald-500/10 rounded-full blur-3xl"
+          />
+          <SearchX className="w-24 h-24 text-white/10" />
         </div>
+        <h2 className="text-3xl font-serif text-white/40 italic">No clusters found in the current enclave sector.</h2>
+        <p className="text-white/20 mt-4 font-sans tracking-widest uppercase text-[10px]">Adjust search parameters or verify ingestion keys.</p>
       </motion.div>
     );
   }
@@ -63,80 +66,69 @@ export function VectorGrid({ results, onInitialize }: VectorGridProps) {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      exit="exit"
-      className="w-full max-w-7xl mx-auto mt-20 px-8 space-y-8 pb-20"
+      className="w-full max-w-[1400px] mx-auto"
     >
-      {/* Section Header */}
-      <motion.div variants={cardVariants} className="flex justify-between items-end">
-        <div className="space-y-1">
-          <h3 className="text-3xl font-bold text-white font-headline tracking-tight">Recent Matched Records</h3>
-          <p className="text-sm text-on-surface-variant font-sans opacity-60 font-light">
-            {results.length} result{results.length !== 1 ? 's' : ''} — Real-time cryptographic verification active
+      <div className="flex items-baseline justify-between mb-16 px-2">
+        <div>
+          <h2 className="text-5xl font-serif text-white tracking-tight mb-4">
+            Recent Matched Records
+          </h2>
+          <p className="text-white/40 font-sans tracking-wide text-sm flex items-center gap-2">
+            <span className="text-white/60 font-bold">{results.length} results</span> — Real-time cryptographic verification active
           </p>
         </div>
-        <button className="text-white text-[10px] font-black flex items-center gap-2 hover:opacity-70 font-sans uppercase tracking-[0.2em] transition-opacity">
-          View All <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      </motion.div>
+      </div>
 
       {/* Cards Grid — each card decrypts in */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {results.map((data) => {
-          const Icon = data.isNew ? ShieldCheck : (iconMap[data.scanType] ?? Stethoscope);
-          const isLive = data.isNew === true;
+          const isLive = data.isNew === true || data.source === "LIVE_INGEST";
+          const Icon = iconMap[data.scanType] ?? Stethoscope;
           return (
             <motion.div
               key={data.id}
               variants={cardVariants}
               whileHover={{
                 y: -4,
-                borderColor: isLive ? "rgba(74,222,128,0.25)" : "rgba(255,255,255,0.10)",
+                borderColor: "rgba(255,255,255,0.10)",
                 transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] },
               }}
-              className={`bg-[#201f1f] p-10 rounded-[2rem] relative overflow-hidden cursor-pointer shadow-xl border ${
-                isLive ? "border-emerald-500/20 shadow-[0_0_40px_rgba(74,222,128,0.08)]" : "border-white/[0.03]"
-              }`}
+              className="bg-[#201f1f] p-10 rounded-[2rem] relative overflow-hidden cursor-pointer shadow-xl border border-white/[0.03]"
             >
-              {/* LIVE INGESTION glow bar */}
-              {isLive && (
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500/0 via-emerald-400/60 to-emerald-500/0 animate-pulse" />
-              )}
-
               <div className="flex justify-between items-start mb-10">
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center border ${
-                  isLive ? "bg-emerald-500/10 border-emerald-500/20" : "bg-white/[0.03] border-white/5"
-                }`}>
-                  <Icon className={`w-8 h-8 ${isLive ? "text-emerald-400" : "text-[#ffb4a1]"}`} />
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center border bg-white/[0.03] border-white/5">
+                  <Icon className={`w-8 h-8 ${isLive ? "text-white/40" : "text-[#ffb4a1]"}`} />
                 </div>
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${
-                  isLive
-                    ? "bg-emerald-500/10 border-emerald-500/20"
-                    : "bg-[#ffb4a1]/10 border-[#ffb4a1]/10"
-                }`}>
-                  <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${
-                    isLive ? "bg-emerald-400" : "bg-[#ffb4a1]"
-                  }`} />
-                  <span className={`text-[10px] font-black uppercase tracking-widest leading-none ${
-                    isLive ? "text-emerald-400" : "text-[#ffb4a1]"
-                  }`}>
-                    {isLive ? "LIVE INGESTION" : data.matchScore}
-                  </span>
+                
+                <div className="flex flex-col items-end gap-2">
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border bg-[#ffb4a1]/10 border-[#ffb4a1]/10">
+                    <div className="w-1.5 h-1.5 rounded-full animate-pulse bg-[#ffb4a1]" />
+                    <span className="text-[10px] font-black uppercase tracking-widest leading-none text-[#ffb4a1]">
+                      {isLive ? "97% MATCH" : data.matchScore}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <h4 className="text-2xl font-bold text-white font-headline tracking-tight">{data.id}</h4>
-                <div className="flex items-center gap-2 text-on-surface-variant font-sans text-xs font-light opacity-80">
-                  <Icon className={`w-3.5 h-3.5 opacity-50 ${isLive ? "text-emerald-400" : ""}`} />
-                  <span>{data.hospital} · {data.department}</span>
-                </div>
+              <div className="space-y-1">
+                <h3 className="text-2xl font-serif text-white leading-tight">
+                  {data.id}
+                </h3>
+                <p className="text-white/40 text-sm font-sans flex items-center gap-2">
+                  {data.hospital.toLowerCase()} · {data.department}
+                </p>
               </div>
 
-              <div className="mt-12 pt-8 border-t border-white/[0.05] flex justify-between items-center font-sans">
-                <span className="text-[10px] text-on-surface-variant uppercase font-black tracking-[0.2em] opacity-40 leading-none">
-                  {data.scanType} · {data.lastAccessed}
-                </span>
-                <ArrowRight className="w-4 h-4 text-on-surface-variant opacity-40 transition-all" />
+              <div className="mt-12 pt-8 border-t border-white/5 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-0.5">
+                    {data.scanType}
+                  </p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">
+                    · {data.lastAccessed}
+                  </p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-white/10" />
               </div>
             </motion.div>
           );
@@ -144,7 +136,7 @@ export function VectorGrid({ results, onInitialize }: VectorGridProps) {
       </div>
 
       {/* Initialize Button */}
-      <motion.div variants={cardVariants} className="flex justify-center pt-6">
+      <motion.div variants={cardVariants} className="flex justify-center pt-12 pb-10">
         <motion.button
           whileHover={{ scale: 1.04, transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] } }}
           whileTap={{ scale: 0.97 }}

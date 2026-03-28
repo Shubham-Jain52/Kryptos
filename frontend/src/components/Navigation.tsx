@@ -4,20 +4,13 @@ import { User, Bell, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function Navigation({ onMenuClick }: { onMenuClick?: () => void }) {
+export function Navigation() {
   const pathname = usePathname();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-transparent py-5 px-12 border-b border-white/[0.04] backdrop-blur-[32px]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-10">
-          <button
-            onClick={onMenuClick}
-            className="text-white/60 p-2 hover:bg-white/5 hover:text-white rounded-full transition-all"
-            aria-label="Open menu"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
 
           <nav className="flex items-center gap-10 font-sans">
             <Link

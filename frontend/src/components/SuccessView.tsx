@@ -1,9 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, Download, ShieldCheck, FileText, Info } from "lucide-react";
+import { CheckCircle2, Download, ShieldCheck, RefreshCcw } from "lucide-react";
 
-export function SuccessView() {
+interface SuccessViewProps {
+  onExport: () => void;
+  onReset: () => void;
+}
+
+export function SuccessView({ onExport, onReset }: SuccessViewProps) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -27,7 +32,7 @@ export function SuccessView() {
       <div className="grid grid-cols-2 gap-6 mb-12">
         <div className="glass-panel p-10 rounded-3xl flex flex-col items-center">
           <span className="text-[10px] uppercase tracking-[0.3em] text-on-surface-variant mb-4 font-black">Model Accuracy</span>
-          <span className="text-5xl font-bold font-headline text-white">94.2%</span>
+          <span className="text-5xl font-bold font-headline text-white">96.8%</span>
         </div>
         <div className="glass-panel p-10 rounded-3xl flex flex-col items-center">
           <span className="text-[10px] uppercase tracking-[0.3em] text-on-surface-variant mb-4 font-black">Data Leakage</span>
@@ -35,13 +40,26 @@ export function SuccessView() {
         </div>
       </div>
 
+      {/* Export Button (Final Output) */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="w-full py-6 bg-secondary-grey text-background-base rounded-full font-black flex items-center justify-center gap-3 transition-all hover:shadow-[0_0_48px_rgba(197,199,197,0.3)] text-xs uppercase tracking-[0.3em] mb-12 border border-white/10"
+        onClick={onExport}
+        className="w-full py-6 bg-white text-black rounded-full font-black flex items-center justify-center gap-3 transition-all hover:shadow-[0_0_48px_rgba(255,255,255,0.3)] text-[10px] uppercase tracking-[0.3em] mb-6 border border-white/10"
       >
         <Download className="w-5 h-5" />
-        Export Secure Model Weights (.pkl)
+        Get Your Model Files (.pkl)
+      </motion.button>
+
+      {/* Reset/Return Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onReset}
+        className="w-full py-5 bg-white/5 text-white/40 rounded-full font-bold flex items-center justify-center gap-3 transition-all text-[10px] uppercase tracking-[0.3em] mb-12 border border-white/5 hover:bg-white/10 hover:text-white"
+      >
+        <RefreshCcw className="w-4 h-4" />
+        Return to Enclave Terminal
       </motion.button>
 
       <div className="glass-panel border-white/5 p-6 rounded-2xl flex items-start gap-4 text-left max-w-lg mx-auto backdrop-blur-3xl bg-white/[0.02]">

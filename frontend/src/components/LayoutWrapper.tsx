@@ -2,17 +2,13 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sidebar } from "./Sidebar";
 import { Navigation } from "./Navigation";
 import { Heartbeat } from "./Heartbeat";
 import { VitalSignal } from "./VitalSignal";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   return (
     <>
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <Heartbeat />
       <VitalSignal />
 
@@ -68,7 +64,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       </div>
 
       <div className="relative z-10 flex flex-col flex-1 min-h-screen">
-        <Navigation onMenuClick={() => setIsSidebarOpen(true)} />
+        <Navigation />
         <main className="flex-1 flex flex-col">
           {children}
         </main>
