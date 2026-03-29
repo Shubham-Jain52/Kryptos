@@ -354,7 +354,7 @@ export default function IngestPage() {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept="image/*"
+                      accept={dataType === "Video Clip" ? "video/*" : "image/*"}
                       onChange={handleFileChange}
                       className="hidden"
                       disabled={isUploading}
@@ -365,7 +365,7 @@ export default function IngestPage() {
                   <div className="flex items-center gap-4">
                     <input
                       type="file"
-                      accept="image/*"
+                      accept={dataType === "Video Clip" ? "video/*" : "image/*"}
                       onChange={handleFileChange}
                       disabled={isUploading}
                       className="block w-full text-[#CED0CE] font-sans text-sm
@@ -420,11 +420,19 @@ export default function IngestPage() {
                           )}
                         </AnimatePresence>
 
-                        <img
-                          src={fileBase64}
-                          alt="Medical scan preview"
-                          className="w-full max-h-80 object-contain rounded-2xl"
-                        />
+                        {dataType === "Video Clip" ? (
+                          <video
+                            src={fileBase64}
+                            controls
+                            className="w-full max-h-80 object-contain rounded-2xl preview-video"
+                          />
+                        ) : (
+                          <img
+                            src={fileBase64}
+                            alt="Medical scan preview"
+                            className="w-full max-h-80 object-contain rounded-2xl"
+                          />
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>
