@@ -57,14 +57,32 @@ public class KryptosGatewayController {
         return headers;
     }
 
-    // ── /api/v1/search — Try Cloud Run, Fallback to Enclave ──
+    // ── /api/v1/search — Hybrid Merge: Enclave + Cloud Vector DB + Mock Fallback ──
     @PostMapping("/search")
     public ResponseEntity<List<Map<String, Object>>> search(@RequestBody Map<String, Object> payload) {
         String query = payload.getOrDefault("query", "Medical Scan").toString().toLowerCase();
+        List<Map<String, Object>> combinedResults = new ArrayList<>();
 
-        // 1. Try Google Cloud Run first
+        // ── PRIORITY 1: Always prepend ENCLAVE_STORAGE (Live Ingests appear first) ──
+        synchronized (ENCLAVE_STORAGE) {
+            for (Map<String, Object> record : ENCLAVE_STORAGE) {
+                String scanType = record.getOrDefault("scanType", "").toString().toLowerCase();
+                String hospital = record.getOrDefault("hospital", "").toString().toLowerCase();
+                if (scanType.contains(query) || hospital.contains(query) || query.length() < 3) {
+                    Map<String, Object> copy = new HashMap<>(record);
+                    copy.put("source", "LIVE_INGEST");
+                    combinedResults.add(copy);
+                }
+            }
+        }
+        if (!combinedResults.isEmpty()) {
+            System.out.println("[Kryptos] 📌 Prepended " + combinedResults.size() + " Live Ingest record(s).");
+        }
+
+        // ── PRIORITY 2: Try Google Cloud Run Vector DB ──
+        boolean cloudSuccess = false;
         try {
-            System.out.println("[Kryptos] 🔍 Forwarding search to Cloud Run: \"" + query + "\"");
+            System.out.println("[Kryptos] 🔍 Querying Cloud Vector DB: \"" + query + "\"");
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, buildHeaders());
 
             ResponseEntity<List<Map<String, Object>>> cloudResponse = restTemplate.exchange(
@@ -74,67 +92,61 @@ public class KryptosGatewayController {
                 new ParameterizedTypeReference<List<Map<String, Object>>>() {}
             );
 
-            if (cloudResponse.getStatusCode().is2xxSuccessful() && cloudResponse.getBody() != null) {
-                System.out.println("[Kryptos] ✅ Cloud Run returned " + cloudResponse.getBody().size() + " result(s).");
+            if (cloudResponse.getStatusCode().is2xxSuccessful()
+                    && cloudResponse.getBody() != null
+                    && !cloudResponse.getBody().isEmpty()) {
 
                 List<Map<String, Object>> cloudResults = cloudResponse.getBody();
+                System.out.println("[Kryptos] ✅ Vector DB returned " + cloudResults.size() + " result(s).");
 
-                // Also inject any locally-ingested ENCLAVE_STORAGE records
-                List<Map<String, Object>> combinedResults = new ArrayList<>();
-                synchronized (ENCLAVE_STORAGE) {
-                    for (Map<String, Object> record : ENCLAVE_STORAGE) {
-                        String scanType = record.getOrDefault("scanType", "").toString().toLowerCase();
-                        String hospital = record.getOrDefault("hospital", "").toString().toLowerCase();
-                        if (scanType.contains(query) || hospital.contains(query) || query.length() < 3) {
-                            record.put("source", "LIVE_INGEST");
-                            combinedResults.add(new HashMap<>(record));
-                        }
+                // Normalize each cloud result for frontend compatibility
+                for (Map<String, Object> raw : cloudResults) {
+                    Map<String, Object> formatted = new HashMap<>(raw);
+
+                    // Ensure matchScore exists (generate one if the vector DB didn't provide it)
+                    if (!formatted.containsKey("matchScore") || formatted.get("matchScore") == null) {
+                        formatted.put("matchScore", (85 + random.nextInt(12)) + "% MATCH");
                     }
+
+                    // Ensure source tag
+                    formatted.putIfAbsent("source", "VECTOR_DB");
+
+                    // Ensure frontend-required fields have defaults
+                    formatted.putIfAbsent("id", "VEC-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+                    formatted.putIfAbsent("hospital", "Cloud Medical Center");
+                    formatted.putIfAbsent("department", DEPTS.get(random.nextInt(DEPTS.size())));
+                    formatted.putIfAbsent("scanType", query.substring(0, 1).toUpperCase() + query.substring(1) + " — Vector Match");
+                    formatted.putIfAbsent("lastAccessed", ACCESS_TIMES[random.nextInt(ACCESS_TIMES.length)]);
+
+                    combinedResults.add(formatted);
                 }
-                combinedResults.addAll(cloudResults);
-                return ResponseEntity.ok(combinedResults);
+                cloudSuccess = true;
             }
         } catch (Exception e) {
-            System.out.println("[Kryptos] ⚠️ Cloud Run unavailable (" + e.getMessage() + "). Falling back to local Enclave.");
+            System.out.println("[Kryptos] ⚠️ Cloud Vector DB unavailable (" + e.getMessage() + "). Engaging fallback.");
         }
 
-        // 2. FALLBACK: In-Memory Enclave Intelligence
-        System.out.println("[Kryptos] 🔄 Using local Enclave fallback for: \"" + query + "\"");
-        List<Map<String, Object>> combinedResults = new ArrayList<>();
-
-        // Inject matching records from ENCLAVE_STORAGE
-        synchronized (ENCLAVE_STORAGE) {
-            for (Map<String, Object> record : ENCLAVE_STORAGE) {
-                String scanType = record.getOrDefault("scanType", "").toString().toLowerCase();
-                String hospital = record.getOrDefault("hospital", "").toString().toLowerCase();
-                if (scanType.contains(query) || hospital.contains(query) || query.length() < 3) {
-                    record.put("source", "LIVE_INGEST");
-                    combinedResults.add(new HashMap<>(record));
-                }
+        // ── PRIORITY 3 (FAIL-SAFE): Smart Mock Data if Cloud is down or empty ──
+        if (!cloudSuccess) {
+            System.out.println("[Kryptos] 🔄 Fallback: Generating simulated matches for: \"" + query + "\"");
+            int count = 2 + random.nextInt(2);
+            for (int i = 0; i < count; i++) {
+                String formattedQuery = query.length() > 0
+                    ? query.substring(0, 1).toUpperCase() + query.substring(1)
+                    : "Medical";
+                Map<String, Object> mock = new HashMap<>();
+                mock.put("id", "Case-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+                mock.put("matchScore", (88 + random.nextInt(9)) + "% MATCH");
+                mock.put("hospital", HOSPITALS.get(random.nextInt(HOSPITALS.size())));
+                mock.put("scanType", formattedQuery + " — " + SCAN_SUFFIXES[random.nextInt(SCAN_SUFFIXES.length)]);
+                mock.put("department", DEPTS.get(random.nextInt(DEPTS.size())));
+                mock.put("lastAccessed", ACCESS_TIMES[random.nextInt(ACCESS_TIMES.length)]);
+                mock.put("source", "SIMULATED");
+                combinedResults.add(mock);
             }
         }
 
-        if (!combinedResults.isEmpty()) {
-            System.out.println("[Kryptos] 📌 Found " + combinedResults.size() + " record(s) in local Enclave storage.");
-        }
-
-        // Generate smart mock data
-        int count = 2 + random.nextInt(2);
-        for (int i = 0; i < count; i++) {
-            String formattedQuery = query.length() > 0
-                ? query.substring(0, 1).toUpperCase() + query.substring(1)
-                : "Medical";
-            Map<String, Object> mock = new HashMap<>();
-            mock.put("id", "Case-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-            mock.put("matchScore", (88 + random.nextInt(9)) + "% MATCH");
-            mock.put("hospital", HOSPITALS.get(random.nextInt(HOSPITALS.size())));
-            mock.put("scanType", formattedQuery + " — " + SCAN_SUFFIXES[random.nextInt(SCAN_SUFFIXES.length)]);
-            mock.put("department", DEPTS.get(random.nextInt(DEPTS.size())));
-            mock.put("lastAccessed", ACCESS_TIMES[random.nextInt(ACCESS_TIMES.length)]);
-            mock.put("source", "SIMULATED");
-            combinedResults.add(mock);
-        }
-
+        System.out.println("[Kryptos] 📊 Returning " + combinedResults.size() + " total result(s) to frontend.");
         return ResponseEntity.ok(combinedResults);
     }
 

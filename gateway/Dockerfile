@@ -16,7 +16,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Memory optimization for Render free tier (512MB RAM limit)
-ENV JAVA_TOOL_OPTIONS="-Xmx400m -Xms400m"
+ENV JAVA_TOOL_OPTIONS="-Xmx384m -Xms384m"
 
 COPY --from=build /app/target/*.jar app.jar
 
