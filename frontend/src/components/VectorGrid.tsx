@@ -13,6 +13,8 @@ const iconMap: Record<string, LucideIcon> = {
   "MRI": Brain,
   "CT Scan": Activity,
   "X-Ray": Bone,
+  "X-Ray/Scan": Bone,
+  "Video Clip": Activity,
 };
 
 const containerVariants: Variants = {

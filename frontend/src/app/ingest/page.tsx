@@ -87,7 +87,7 @@ export default function IngestPage() {
           body: JSON.stringify({
             hospitalName: hospitalName || "Hospital B",
             condition: condition || "General Scan",
-            dataType: "medical-scan",
+            dataType: dataType,
             isEncrypted: true,
             content: cipherText,
           }),
