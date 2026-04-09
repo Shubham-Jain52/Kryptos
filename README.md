@@ -1,3 +1,4 @@
+
 # **Kryptos AI : Medical Matchmaker Backend**
 
 Welcome to the **Kryptos AI** , the intelligence engine behind the Medical Matchmaker ecosystem.  
@@ -46,25 +47,25 @@ When a doctor queries the system, the enclave vectorizes the search query using 
 
 Stores new medical data in the vector database.  
 **Request Body:**
-`
+```
 {  
   "content": "Patient presents with severe trauma to the lower left extremity...",  
   "hospitalName": "St. Jude Medical Center",  
   "dataType": "MRI Scan Notes"  
 }
-`
+```
 ### **POST /ai/search**
 
 Retrieves similar historical cases based on natural language queries.  
 **Request Body:**
-`
+```
 {  
   "query": "complications involving lower leg bone breaks"  
 }
-`
+```
 **Response:**
 
-`
+```
 \[  
   {  
     "id": "CASE-A1B2C3D4",  
@@ -75,32 +76,32 @@ Retrieves similar historical cases based on natural language queries.
     "lastAccessed": "2026-03-29T10:00:00Z"  
   }  
 \]
-`
+```
 
 ## **Local Setup & Development**
 
 To run the Kryptos Enclave locally during development:
 
 1. **Clone the repository:**  
-`
+```
    git clone \<your-repo-url\>  
    cd kryptos-enclave
-`
+```
 2. **Install dependencies:** 
-` 
+``` 
    pip install \-r requirements.txt
-`
+```
 3. **Set Environment Variables:**  
    Create a .env file or export the following variables in your terminal:  
-   `
+   ```
    export GEMINI\_API\_KEY="your\_google\_ai\_key"  
    export PINECONE\_API\_KEY="your\_pinecone\_key"
-   `
+   ```
 
 4. **Run the Server:**  
-`
+```
    uvicorn main:app \--host 0.0.0.0 \--port 8000 \--reload
-`
+```
 
 ## **Deployment**
 
